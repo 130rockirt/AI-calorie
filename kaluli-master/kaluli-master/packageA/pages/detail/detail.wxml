@@ -1,0 +1,159 @@
+<view class="container">
+  <view class="preview-container">
+    <view class="image-container">
+      <image class="food-image {{isCalculating ? 'blur-effect' : ''}}" mode="aspectFill" src="{{imagePath}}"></image>
+      <view class="upload-btn" bindtap="chooseImage" wx:if="{{imagePath === '/images/empty.png'}}">
+        <view class="upload-icon">+</view>
+        <text class="upload-text">上传图片</text>
+      </view>
+    </view>
+    
+    <view class="content">
+      <view class="loading-container" wx:if="{{isCalculating}}">
+        <view class="loading-effect">
+          <view class="loading-circle"></view>
+          <view class="loading-circle"></view>
+          <view class="loading-circle"></view>
+        </view>
+        <text class="loading-text">正在分析食物信息</text>
+        <text class="loading-dots">...</text>
+      </view>
+
+      <!-- 无法识别时的提示 -->
+      <view class="unrecognized-container" wx:elif="{{!foodInfo}}">
+        <view class="unrecognized-card">
+          <view class="unrecognized-header">
+            <text class="unrecognized-emoji">🤔</text>
+            <text class="unrecognized-title">暂时无法识别</text>
+            <text class="unrecognized-desc">抱歉，我们无法识别这张图片中的食物内容</text>
+          </view>
+          <view class="tips-section">
+            <text class="tips-title">拍摄建议</text>
+            <view class="tips-list">
+              <text class="tip-item">• 确保光线充足，避免阴影遮挡</text>
+              <text class="tip-item">• 尽量从正面拍摄，保持画面稳定</text>
+              <text class="tip-item">• 对焦清晰，避免模糊和晃动</text>
+            </view>
+          </view>
+          <button class="retry-btn" bindtap="back">重新拍摄</button>
+        </view>
+      </view>
+
+      <view class="result-container {{foodInfo ? 'fade-in' : ''}}" wx:if="{{foodInfo}}">
+        <view class="result-header">
+          <view class="food-name-container">
+            <text class="food-name">{{foodInfo.foodName}}</text>
+            <view class="edit-btn" bindtap="startEdit" wx:if="{{!isEditing}}">
+              <image src="/images/edit.png" mode="aspectFit"></image>
+            </view>
+          </view>
+          <view class="datetime">
+            <view class="date-row">
+              <text class="date">{{currentDate}}</text>
+              <text class="time-period">{{timePeriod}}</text>
+            </view>
+            <text class="time">{{currentTime}}</text>
+          </view>
+        </view>
+
+        <!-- 编辑表单 -->
+        <view class="edit-form" wx:if="{{isEditing}}">
+          <view class="form-item">
+            <text class="form-label">食物名称</text>
+            <input class="form-input" 
+                   value="{{editForm.foodName}}"
+                   bindinput="onInputChange"
+                   data-field="foodName"
+                   placeholder="请输入食物名称"/>
+          </view>
+          <view class="form-item">
+            <text class="form-label">重量(g)</text>
+            <input class="form-input" 
+                   type="number"
+                   value="{{editForm.weight}}"
+                   bindinput="onInputChange"
+                   data-field="weight"
+                   placeholder="请输入重量"/>
+          </view>
+          <view class="form-item">
+            <text class="form-label">卡路里</text>
+            <input class="form-input" 
+                   type="number"
+                   value="{{editForm.calories}}"
+                   bindinput="onInputChange"
+                   data-field="calories"
+                   placeholder="请输入卡路里"/>
+          </view>
+          <view class="form-item">
+            <text class="form-label">蛋白质(g)</text>
+            <input class="form-input" 
+                   type="digit"
+                   value="{{editForm.protein}}"
+                   bindinput="onInputChange"
+                   data-field="protein"
+                   placeholder="请输入蛋白质含量"/>
+          </view>
+          <view class="form-item">
+            <text class="form-label">日期</text>
+            <picker mode="date" 
+                    value="{{editForm.rawDate}}" 
+                    start="2020-01-01" 
+                    end="2030-12-31" 
+                    bindchange="onDateChange">
+              <view class="form-input picker">{{editForm.date}}</view>
+            </picker>
+          </view>
+          <view class="form-item">
+            <text class="form-label">时间</text>
+            <picker mode="time" 
+                    value="{{editForm.time}}" 
+                    bindchange="onTimeChange">
+              <view class="form-input picker">{{editForm.time}}</view>
+            </picker>
+          </view>
+          <view class="form-item">
+            <text class="form-label">时段</text>
+            <view class="form-input time-period-display">{{editForm.timePeriod}}</view>
+          </view>
+          <view class="form-item">
+            <text class="form-label">营养分析</text>
+            <textarea class="form-textarea" 
+                      value="{{editForm.analysis}}"
+                      bindinput="onInputChange"
+                      data-field="analysis"
+                      placeholder="请输入营养分析内容"/>
+          </view>
+          <view class="form-buttons">
+            <button class="form-btn cancel" bindtap="cancelEdit">取消</button>
+            <button class="form-btn confirm" bindtap="saveEdit">保存</button>
+          </view>
+        </view>
+
+        <!-- 正常显示 -->
+        <view class="result-grid" wx:else>
+          <view class="grid-item">
+            <text class="value">{{foodInfo.calories}}</text>
+            <text class="label">卡路里(kcal)</text>
+          </view>
+          <view class="grid-item">
+            <text class="value">{{foodInfo.weight}}</text>
+            <text class="label">重量(g)</text>
+          </view>
+          <view class="grid-item">
+            <text class="value">{{foodInfo.protein}}</text>
+            <text class="label">蛋白质(g)</text>
+          </view>
+          <view class="analysis-item">
+            <text class="analysis-label">营养分析</text>
+            <text class="analysis-content">{{foodInfo.analysis}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="action-buttons" wx:if="{{!isCalculating && !isEditing && foodInfo}}">
+      <button class="btn btn-back" bindtap="back">返回</button>
+      <button class="btn btn-confirm" bindtap="confirm">确定</button>
+    </view>
+  </view>
+</view> 

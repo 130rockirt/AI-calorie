@@ -1,0 +1,74 @@
+{
+  "cloud":true,
+  "pages": [
+    "pages/index/index",
+    "pages/history/history",
+    "pages/profile/profile",
+    "pages/text/text"
+  ],
+  "subpackages": [
+    {
+      "root": "packageA",
+      "pages": [
+        "pages/detail/detail"
+      ]
+    }
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "识别卡路里",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#007AFF",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "拍照识别",
+        "iconPath": "images/camera.png",
+        "selectedIconPath": "images/camera.png"
+      },
+      {
+        "pagePath": "pages/text/text",
+        "text": "文本识别",
+        "iconPath": "images/text.png",
+        "selectedIconPath": "images/text.png"
+      },
+      {
+        "pagePath": "pages/history/history",
+        "text": "历史记录",
+        "iconPath": "images/history.png",
+        "selectedIconPath": "images/history.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/my.png",
+        "selectedIconPath": "images/my.png"
+      }
+    ]
+  },
+  "lazyCodeLoading": "requiredComponents",
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "networkTimeout": {
+    "request": 60000
+  },
+  "requiredPrivateInfos": [
+    "getLocation",
+    "chooseLocation",
+    "chooseAddress"
+  ],
+  "permission": {
+    "scope.writePhotosAlbum": {
+      "desc": "需要保存照片到相册"
+    },
+    "scope.camera": {
+      "desc": "需要使用相机进行拍照"
+    }
+  }
+} 

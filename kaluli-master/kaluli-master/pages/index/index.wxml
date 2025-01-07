@@ -1,0 +1,22 @@
+<view class="container">
+  <view class="camera-container">
+    <view class="camera-wrapper">
+      <camera device-position="{{cameraPosition}}" binderror="error"></camera>
+      <view class="camera-mask">
+        <view class="camera-frame"></view>
+      </view>
+    </view>
+    
+    <view class="controls">
+      <view class="control-btn" bindtap="switchCamera">
+        <image src="/images/switch.png"></image>
+      </view>
+      <view class="capture-btn" bindtap="takePhoto">
+        <view class="capture-btn-inner"></view>
+      </view>
+      <view class="control-btn" bindtap="chooseImage">
+        <image src="/images/album.png"></image>
+      </view>
+    </view>
+  </view>
+</view> 

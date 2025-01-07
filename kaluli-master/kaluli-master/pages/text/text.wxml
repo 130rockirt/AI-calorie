@@ -1,0 +1,48 @@
+<view class="container">
+  <view class="input-section">
+    <textarea 
+      class="text-input" 
+      placeholder="请输入食物描述,例如: 一碗白米饭,一个鸡蛋,一盘青菜..." 
+      value="{{inputText}}"
+      bindinput="onInputChange"
+      maxlength="500"
+    ></textarea>
+  </view>
+
+  <view class="button-section">
+    <button 
+      class="submit-button" 
+      bindtap="submitText" 
+      loading="{{loading}}"
+      disabled="{{loading}}"
+    >开始识别</button>
+  </view>
+
+  <!-- 无法识别时的提示 -->
+  <view class="unrecognized-container" wx:if="{{showUnrecognized}}">
+    <view class="unrecognized-card">
+      <view class="unrecognized-header">
+        <text class="unrecognized-emoji">🤔</text>
+        <text class="unrecognized-title">暂时无法识别</text>
+        <text class="unrecognized-desc">抱歉，我们无法识别您输入的食物描述</text>
+      </view>
+      <view class="tips-section">
+        <text class="tips-title">输入建议</text>
+        <view class="tips-list">
+          <text class="tip-item">• 请尽可能详细描述食物的种类和数量</text>
+          <text class="tip-item">• 使用常见的食物名称和计量单位</text>
+          <text class="tip-item">• 避免使用过于口语化的表达</text>
+        </view>
+      </view>
+      <button class="retry-btn" bindtap="onInputChange" data-value="">重新输入</button>
+    </view>
+  </view>
+
+  <!-- 输入提示 -->
+  <view class="tips-section" wx:if="{{!showUnrecognized}}">
+    <text class="tips-title">输入提示:</text>
+    <text class="tips-content">1. 尽可能详细描述食物的种类和数量</text>
+    <text class="tips-content">2. 可以一次输入多种食物</text>
+    <text class="tips-content">3. 建议包含食物的大概份量</text>
+  </view>
+</view> 

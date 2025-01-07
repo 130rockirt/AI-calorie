@@ -1,0 +1,213 @@
+<view class="container">
+  <!-- 未填写信息时的表单 -->
+  <view class="profile-form" wx:if="{{!hasUserInfo}}">
+    <view class="form-header">
+      <text class="title">完善个人信息</text>
+      <text class="subtitle">帮助我们为您计算每日所需卡路里</text>
+    </view>
+
+    <view class="form-group">
+      <view class="form-item">
+        <text class="label">性别</text>
+        <radio-group bindchange="onGenderChange">
+          <label class="radio-item">
+            <radio value="male" checked="{{gender === 'male'}}"/>男
+          </label>
+          <label class="radio-item">
+            <radio value="female" checked="{{gender === 'female'}}"/>女
+          </label>
+        </radio-group>
+      </view>
+
+      <view class="form-item">
+        <text class="label">年龄</text>
+        <input type="number" 
+               class="input" 
+               placeholder="请输入年龄" 
+               value="{{age}}"
+               bindinput="onAgeChange"/>
+      </view>
+
+      <view class="form-item">
+        <text class="label">身高(cm)</text>
+        <input type="digit" 
+               class="input" 
+               placeholder="请输入身高" 
+               value="{{height}}"
+               bindinput="onHeightChange"/>
+      </view>
+
+      <view class="form-item">
+        <text class="label">体重(kg)</text>
+        <input type="digit" 
+               class="input" 
+               placeholder="请输入体重" 
+               value="{{weight}}"
+               bindinput="onWeightChange"/>
+      </view>
+
+      <view class="form-item">
+        <text class="label">活动水平</text>
+        <picker bindchange="onActivityLevelChange" 
+                value="{{activityLevelIndex}}" 
+                range="{{activityLevels}}"
+                range-key="name">
+          <view class="picker">
+            {{activityLevels[activityLevelIndex].name}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="label">健康目标</text>
+        <picker bindchange="onGoalChange" 
+                value="{{goalIndex}}" 
+                range="{{goals}}"
+                range-key="name">
+          <view class="picker">
+            {{goals[goalIndex].name}}
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <button class="submit-btn" bindtap="saveUserInfo">保存信息</button>
+  </view>
+
+  <!-- 已填写信息后的展示 -->
+  <view class="profile-info" wx:else>
+    <view class="info-card">
+      <view class="card-header">
+        <text class="card-title">每日推荐摄入</text>
+        <view class="edit-btn" bindtap="editInfo">
+          <image src="/images/edit.png" mode="aspectFit"></image>
+        </view>
+      </view>
+
+      <view class="calories-info">
+        <text class="calories-value">{{dailyCalories}}</text>
+        <text class="calories-unit">千卡</text>
+      </view>
+
+      <view class="details">
+        <view class="detail-item">
+          <text class="detail-label">基础代谢率(BMR)</text>
+          <text class="detail-value">{{bmr}} 千卡</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">活动消耗</text>
+          <text class="detail-value">{{activityCalories}} 千卡</text>
+        </view>
+        <view class="detail-item">
+          <text class="detail-label">目标调整</text>
+          <text class="detail-value">{{goalAdjustment}} 千卡</text>
+        </view>
+      </view>
+
+      <view class="user-stats">
+        <view class="stat-item">
+          <text class="stat-label">身高</text>
+          <text class="stat-value">{{height}}cm</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">体重</text>
+          <text class="stat-value">{{weight}}kg</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-label">BMI</text>
+          <text class="stat-value">{{bmi}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 日历卡片 -->
+    <view class="calendar-card">
+      <view class="month-selector">
+        <text class="arrow" bindtap="prevMonth">◀</text>
+        <text class="current-month">{{currentYear}}年{{currentMonth}}月</text>
+        <text class="arrow" bindtap="nextMonth">▶</text>
+      </view>
+
+      <view class="calendar">
+        <view class="weekdays">
+          <text class="weekday">日</text>
+          <text class="weekday">一</text>
+          <text class="weekday">二</text>
+          <text class="weekday">三</text>
+          <text class="weekday">四</text>
+          <text class="weekday">五</text>
+          <text class="weekday">六</text>
+        </view>
+
+        <view class="days">
+          <block wx:for="{{calendarDays}}" wx:key="index">
+            <view class="day {{item.status}} {{item.isCurrentMonth ? '' : 'other-month'}}" bindtap="selectDay" data-date="{{item.date}}">
+              <text class="day-number">{{item.day}}</text>
+            </view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 图例 -->
+      <view class="calendar-legend">
+        <view class="legend-item">
+          <view class="legend-color excess"></view>
+          <text>超标</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-color normal"></view>
+          <text>达标</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 食物列表弹出层 -->
+  <view class="food-popup {{showFoodList ? 'show' : ''}}" bindtap="closeFoodList">
+    <view class="food-list-container" catchtap="stopPropagation">
+      <view class="food-list-header">
+        <text class="food-list-date">{{selectedDate}}</text>
+        <view class="close-btn" bindtap="closeFoodList">×</view>
+      </view>
+
+      <!-- 添加当天总摄入量显示 -->
+      <view class="daily-total">
+        <view class="total-item">
+          <text class="total-label">卡路里</text>
+          <text class="total-value">{{dayTotalCalories}}千卡</text>
+        </view>
+        <view class="total-divider"></view>
+        <view class="total-item">
+          <text class="total-label">蛋白质</text>
+          <text class="total-value" wx:if="{{dayTotalProtein > 0}}">{{dayTotalProtein}}g</text>
+          <text class="total-value" wx:else>-</text>
+        </view>
+      </view>
+      
+      <scroll-view scroll-y class="food-list">
+        <block wx:if="{{dayFoods.length > 0}}">
+          <view class="food-item" 
+                wx:for="{{dayFoods}}" 
+                wx:key="id" 
+                bindtap="viewFoodDetail" 
+                data-image-path="{{item.imagePath}}">
+            <image class="food-image" src="{{item.imagePath}}" mode="aspectFill"></image>
+            <view class="food-info">
+              <text class="food-name">{{item.foodName}}</text>
+              <view class="food-details">
+                <text class="food-time">{{item.time}} {{item.timePeriod}}</text>
+                <view class="food-stats">
+                  <text class="food-calories">{{item.calories}}千卡</text>
+                  <text class="food-protein" wx:if="{{item.protein > 0}}">{{item.protein}}g</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </block>
+        <view class="empty-list" wx:else>
+          <text>当天暂无饮食记录</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</view> 

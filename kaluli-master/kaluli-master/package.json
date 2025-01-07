@@ -1,0 +1,9 @@
+{
+  "name": "kaluli",
+  "version": "1.0.0",
+  "description": "卡路里计算小程序",
+  "main": "app.js",
+  "dependencies": {
+    "@babel/runtime": "^7.23.7"
+  }
+} 

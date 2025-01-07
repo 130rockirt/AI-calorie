@@ -1,0 +1,91 @@
+<view class="container">
+  <!-- 今日统计 -->
+  <view class="today-stats">
+    <view class="stats-item">
+      <text class="stats-label">今日卡路里</text>
+      <view class="stats-value">{{todayCalories}}<text class="unit">千卡</text></view>
+    </view>
+    <view class="stats-divider"></view>
+    <view class="stats-item">
+      <text class="stats-label">今日蛋白质</text>
+      <view class="stats-value">{{todayProtein || 0}}<text class="unit">g</text></view>
+    </view>
+  </view>
+
+  <!-- 历史记录列表 -->
+  <scroll-view scroll-y class="history-list">
+    <block wx:for="{{groupedHistory}}" wx:key="date">
+      <!-- 日期分组 -->
+      <view class="date-group">
+        <view class="date-header" bindtap="toggleGroup" data-date="{{item.date}}">
+          <view class="date-info">
+            <text class="date">{{item.date}}</text>
+            <view class="day-stats">
+              <text class="day-calories">{{item.totalDayCalories}} 千卡</text>
+              <text class="day-protein">{{item.totalDayProtein || 0}} g</text>
+            </view>
+          </view>
+          <view class="header-right">
+            <view class="fold-icon {{item.isExpanded ? 'expanded' : ''}}"></view>
+          </view>
+        </view>
+
+        <!-- 时段分组 -->
+        <view class="group-content {{item.isExpanded ? 'expanded' : ''}}">
+          <block wx:for="{{['早餐', '午餐', '晚餐', '夜宵']}}" wx:for-item="mealType" wx:key="*this">
+            <block wx:if="{{item.meals[mealType].length > 0}}">
+              <view class="meal-type">
+                <view class="meal-label-container">
+                  <text class="meal-icon">{{mealType === '早餐' ? '🌅' : mealType === '午餐' ? '🌞' : mealType === '晚餐' ? '🌙' : '🌜'}}</text>
+                  <text class="meal-label">{{mealType}}</text>
+                </view>
+                <view class="meal-stats">
+                  <text class="meal-calories">{{item.mealCalories[mealType]}} 千卡</text>
+                  <text class="meal-protein">{{item.mealProtein[mealType] || 0}} g</text>
+                </view>
+              </view>
+              
+              <view class="meal-items">
+                <view class="food-item" 
+                      wx:for="{{item.meals[mealType]}}" 
+                      wx:for-item="food" 
+                      wx:key="id">
+                  <view class="food-content" bindtap="viewDetail" data-image-path="{{food.imagePath}}">
+                    <image class="food-image" 
+                           src="{{food.imagePath}}" 
+                           mode="aspectFill"></image>
+                    <view class="food-info">
+                      <view class="food-name">{{food.foodName}}</view>
+                      <view class="food-details">
+                        <text class="time">{{food.time}}</text>
+                        <view class="food-stats">
+                          <text class="weight">{{food.weight}}g</text>
+                          <text class="calories">{{food.calories}}千卡</text>
+                          <text class="protein">{{food.protein || 0}}g</text>
+                        </view>
+                      </view>
+                    </view>
+                  </view>
+                  <view class="delete-btn" 
+                        catchtap="deleteRecord" 
+                        data-image-path="{{food.imagePath}}"
+                        data-date="{{item.date}}"
+                        data-time-period="{{mealType}}">
+                    <image src="/images/delete.png" mode="aspectFit"></image>
+                  </view>
+                </view>
+              </view>
+            </block>
+          </block>
+        </view>
+      </view>
+    </block>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{groupedHistory.length === 0}}">
+      <image src="/images/empty.png" mode="aspectFit"></image>
+      <text>还没有任何记录哦</text>
+      <text class="empty-tip">快去记录你的第一餐吧</text>
+    </view>
+  </scroll-view>
+</view> 
